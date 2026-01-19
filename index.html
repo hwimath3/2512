@@ -3,637 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>가우스 함수와 무리식 극한 - 10단계 변형문제</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
+    <title>무리함수 극한: 유리화와 가우스 함수</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 1.8em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .progress-bar {
-            background: rgba(255,255,255,0.3);
-            border-radius: 10px;
-            height: 20px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, #00c853, #69f0ae);
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.5s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1a5f2a;
-            font-weight: bold;
-            font-size: 0.85em;
-        }
-
-        .score-display {
-            text-align: center;
-            color: white;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-
-        .quiz-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-
-        .step-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .difficulty {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 0.85em;
-            margin-left: 10px;
-        }
-
-        .difficulty.easy { background: #e8f5e9; color: #2e7d32; }
-        .difficulty.medium { background: #fff3e0; color: #ef6c00; }
-        .difficulty.hard { background: #ffebee; color: #c62828; }
-
-        .question {
-            font-size: 1.1em;
-            line-height: 1.8;
-            margin-bottom: 25px;
-            color: #333;
-        }
-
-        .hint-box {
-            background: #f3e5f5;
-            border-left: 4px solid #9c27b0;
-            padding: 15px;
-            margin-bottom: 25px;
-            border-radius: 0 10px 10px 0;
-        }
-
-        .hint-box strong {
-            color: #7b1fa2;
-        }
-
-        .options {
-            display: grid;
-            gap: 12px;
-        }
-
-        .option {
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
-
-        .option:hover {
-            border-color: #667eea;
-            background: #f5f3ff;
-        }
-
-        .option.selected {
-            border-color: #667eea;
-            background: #ede7f6;
-        }
-
-        .option.correct {
-            border-color: #4caf50;
-            background: #e8f5e9;
-        }
-
-        .option.incorrect {
-            border-color: #f44336;
-            background: #ffebee;
-        }
-
-        .option-label {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-
-        .option.correct .option-label {
-            background: #4caf50;
-            color: white;
-        }
-
-        .option.incorrect .option-label {
-            background: #f44336;
-            color: white;
-        }
-
-        .btn {
-            padding: 15px 40px;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 5px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-primary:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-secondary {
-            background: #f5f5f5;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .button-group {
-            text-align: center;
-            margin-top: 25px;
-        }
-
-        .solution {
-            background: #e3f2fd;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .solution.show {
-            display: block;
-        }
-
-        .solution h4 {
-            color: #1565c0;
-            margin-bottom: 15px;
-        }
-
-        .solution-content {
-            line-height: 2;
-            color: #333;
-        }
-
-        .result-card {
-            text-align: center;
-            padding: 40px;
-        }
-
-        .result-card h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .result-score {
-            font-size: 4em;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .result-message {
-            font-size: 1.3em;
-            margin: 20px 0;
-            color: #666;
-        }
-
-        .result-details {
-            background: #f5f5f5;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.4em;
-            }
-
-            .quiz-card {
-                padding: 20px;
-            }
-
-            .btn {
-                padding: 12px 25px;
-                font-size: 1em;
-            }
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .math-display { font-size: 1.1rem; margin: 1.5rem 0; padding: 1.2rem; background-color: #ffffff; border-left: 4px solid #3b82f6; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto; }
+        .concept-box { background-color: #eff6ff; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid #dbeafe; }
+        .option-label { transition: all 0.2s; cursor: pointer; display: block; }
+        .option-label:hover { background-color: #eff6ff; transform: translateY(-2px); border-color: #3b82f6; }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>가우스 함수와 무리식 극한</h1>
-            <p>10단계 변형문제 퀴즈</p>
-        </div>
+<body class="p-4 sm:p-8 md:p-12 text-slate-800">
+    <div id="app" class="max-w-4xl mx-auto bg-white shadow-2xl rounded-3xl p-6 sm:p-10 border border-slate-100">
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-slate-900 mb-2">무리함수 극한</h1>
+        <p class="text-center text-slate-500 mb-8">유리화와 가우스 함수 마스터 10단계</p>
 
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill" style="width: 10%">1 / 10</div>
-        </div>
-
-        <div class="score-display" id="scoreDisplay">
-            정답: <span id="correctCount">0</span> / <span id="totalAttempted">0</span>
-        </div>
-
-        <div class="quiz-card" id="quizCard">
-            <!-- Quiz content loaded here -->
-        </div>
-
-        <div class="quiz-card hidden" id="resultCard">
-            <div class="result-card">
-                <h2>퀴즈 완료!</h2>
-                <div class="result-score" id="finalScore">0/10</div>
-                <div class="result-message" id="resultMessage"></div>
-                <div class="result-details" id="resultDetails"></div>
-                <button class="btn btn-primary" onclick="restartQuiz()">다시 풀기</button>
+        <div id="page-study" class="page active">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 border-b pb-2">핵심 원리</h2>
+            <div class="concept-box">
+                <h3 class="text-xl font-bold text-blue-600 mb-3">$\sqrt{ax^2+b} - cx$ 형태 유리화</h3>
+                <p class="text-slate-700 mb-2">분자, 분모에 $\sqrt{ax^2+b} + cx$를 곱해 유리화합니다.</p>
+                <div class="math-display">$$ \sqrt{ax^2+b} - cx = \frac{(ax^2+b) - c^2x^2}{\sqrt{ax^2+b} + cx} = \frac{(a-c^2)x^2 + b}{\sqrt{ax^2+b} + cx} $$</div>
             </div>
+            <div class="concept-box bg-amber-50 border-amber-200">
+                <h3 class="text-xl font-bold text-amber-600 mb-3">오늘의 문제</h3>
+                <p class="text-slate-700">$\displaystyle\lim_{x \to \infty} \left( \sqrt{25x^2 + [x]} - 5x \right)$의 값은?</p>
+                <p class="text-slate-600 text-sm mt-2">(단, $[x]$는 가우스 함수: $x$를 넘지 않는 최대 정수)</p>
+                <div class="math-display border-amber-400">$$ \lim_{x \to \infty} \left( \sqrt{25x^2 + [x]} - 5x \right) = ? $$</div>
+                <p class="text-slate-600 text-sm">① $-\frac{1}{10}$ ② $-\frac{1}{15}$ ③ $0$ ④ $\frac{1}{15}$ ⑤ $\frac{1}{10}$</p>
+            </div>
+            <div class="mt-8 mb-4">
+                <label for="username-input" class="block text-sm font-medium text-slate-600 mb-1">학생 이름</label>
+                <input type="text" id="username-input" placeholder="이름을 입력하세요" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition shadow-sm outline-none">
+            </div>
+            <button onclick="startQuiz()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl mt-2 transition duration-300 shadow-lg transform hover:scale-[1.01]">문제 풀이 시작하기</button>
+        </div>
+
+        <div id="page-quiz" class="page">
+            <div id="quiz-header" class="mb-6">
+                <div class="flex justify-between items-end mb-2"><span class="text-lg font-bold text-blue-700">Step <span id="current-q-number">1</span></span><span class="text-sm text-slate-400">Total 10 Questions</span></div>
+                <div class="w-full bg-slate-100 rounded-full h-2"><div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div></div>
+            </div>
+            <div id="question-area" class="min-h-[250px] p-6 bg-slate-50 rounded-2xl border border-slate-200">
+                <p id="question-text" class="text-xl font-medium text-slate-800 mb-8 leading-relaxed"></p>
+                <div id="options-container" class="space-y-3"></div>
+            </div>
+            <div id="feedback" class="mt-6 p-4 rounded-xl text-white font-semibold hidden"></div>
+            <div class="flex gap-3 mt-8">
+                <button onclick="prevQuestion()" id="prev-btn" class="hidden px-6 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-4 rounded-xl transition shadow-sm">이전</button>
+                <button onclick="submitAnswer()" id="submit-btn" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl transition shadow-md">정답 확인</button>
+                <button onclick="nextQuestion()" id="next-btn" class="hidden flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition shadow-md">다음 단계</button>
+            </div>
+        </div>
+
+        <div id="page-results" class="page text-center p-8">
+            <div class="mb-6 text-6xl animate-pulse">🏆</div>
+            <h2 class="text-3xl font-extrabold text-slate-800 mb-2">학습 완료!</h2>
+            <div class="text-7xl font-black text-blue-600 my-8"><span id="final-score">0</span><span class="text-3xl text-slate-400">/10</span></div>
+            <div id="upload-status" class="text-sm text-slate-500 mb-8 h-6 font-medium">결과 저장 중...</div>
+            <button onclick="window.location.reload()" class="bg-white border-2 border-slate-900 text-slate-900 hover:bg-slate-50 font-bold py-3 px-8 rounded-xl transition shadow-sm">다시 도전하기</button>
         </div>
     </div>
 
     <script>
-        const quizData = [
-            {
-                step: 1,
-                difficulty: "easy",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{x^2 + x} - x \\right)\\)의 값을 구하시오.",
-                hint: "유리화: \\(\\sqrt{A} - B = \\frac{A - B^2}{\\sqrt{A} + B}\\)",
-                options: [
-                    "\\(0\\)",
-                    "\\(\\frac{1}{2}\\)",
-                    "\\(1\\)",
-                    "\\(\\frac{1}{4}\\)",
-                    "\\(2\\)"
-                ],
-                answer: 1,
-                solution: "유리화하면 \\(\\frac{x^2 + x - x^2}{\\sqrt{x^2+x} + x} = \\frac{x}{\\sqrt{x^2+x} + x}\\)<br><br>분자, 분모를 \\(x\\)로 나누면:<br>\\(\\frac{1}{\\sqrt{1 + \\frac{1}{x}} + 1} \\to \\frac{1}{1+1} = \\frac{1}{2}\\)"
-            },
-            {
-                step: 2,
-                difficulty: "easy",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{4x^2 + 3x} - 2x \\right)\\)의 값을 구하시오.",
-                hint: "유리화 후 최고차항으로 나누기",
-                options: [
-                    "\\(\\frac{3}{8}\\)",
-                    "\\(\\frac{3}{4}\\)",
-                    "\\(\\frac{1}{2}\\)",
-                    "\\(\\frac{3}{2}\\)",
-                    "\\(1\\)"
-                ],
-                answer: 1,
-                solution: "유리화: \\(\\frac{4x^2 + 3x - 4x^2}{\\sqrt{4x^2+3x} + 2x} = \\frac{3x}{\\sqrt{4x^2+3x} + 2x}\\)<br><br>\\(x\\)로 나누면: \\(\\frac{3}{\\sqrt{4 + \\frac{3}{x}} + 2} \\to \\frac{3}{2+2} = \\frac{3}{4}\\)"
-            },
-            {
-                step: 3,
-                difficulty: "easy",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{9x^2 + 2x} - 3x \\right)\\)의 값을 구하시오.",
-                hint: "\\(\\sqrt{9x^2} = 3x\\) (\\(x > 0\\))",
-                options: [
-                    "\\(\\frac{1}{6}\\)",
-                    "\\(\\frac{1}{3}\\)",
-                    "\\(\\frac{2}{3}\\)",
-                    "\\(\\frac{1}{2}\\)",
-                    "\\(1\\)"
-                ],
-                answer: 1,
-                solution: "유리화: \\(\\frac{9x^2 + 2x - 9x^2}{\\sqrt{9x^2+2x} + 3x} = \\frac{2x}{\\sqrt{9x^2+2x} + 3x}\\)<br><br>\\(x\\)로 나누면: \\(\\frac{2}{\\sqrt{9 + \\frac{2}{x}} + 3} \\to \\frac{2}{3+3} = \\frac{1}{3}\\)"
-            },
-            {
-                step: 4,
-                difficulty: "medium",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{16x^2 + [x]} - 4x \\right)\\)의 값을 구하시오.<br>(단, \\([x]\\)는 \\(x\\)보다 크지 않은 최대의 정수)",
-                hint: "가우스 함수의 성질: \\(x-1 < [x] \\leq x\\)",
-                options: [
-                    "\\(0\\)",
-                    "\\(\\frac{1}{8}\\)",
-                    "\\(\\frac{1}{4}\\)",
-                    "\\(\\frac{1}{2}\\)",
-                    "존재하지 않음"
-                ],
-                answer: 1,
-                solution: "\\(x-1 < [x] \\leq x\\)이므로:<br>\\(\\sqrt{16x^2 + x-1} - 4x < \\sqrt{16x^2 + [x]} - 4x \\leq \\sqrt{16x^2 + x} - 4x\\)<br><br>양쪽 극한 모두 \\(\\frac{x}{8x} = \\frac{1}{8}\\)로 수렴<br>샌드위치 정리에 의해 답은 \\(\\frac{1}{8}\\)"
-            },
-            {
-                step: 5,
-                difficulty: "medium",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{25x^2 + [x]} - 5x \\right)\\)의 값을 구하시오.<br>(단, \\([x]\\)는 \\(x\\)보다 크지 않은 최대의 정수)",
-                hint: "원본 문제: 유리화 + 샌드위치 정리",
-                options: [
-                    "\\(-\\frac{1}{10}\\)",
-                    "\\(-\\frac{1}{15}\\)",
-                    "\\(0\\)",
-                    "\\(\\frac{1}{15}\\)",
-                    "\\(\\frac{1}{10}\\)"
-                ],
-                answer: 4,
-                solution: "\\(x-1 < [x] \\leq x\\)이므로:<br>\\(\\sqrt{25x^2 + x-1} - 5x < \\sqrt{25x^2 + [x]} - 5x \\leq \\sqrt{25x^2 + x} - 5x\\)<br><br>유리화하면 양쪽 모두 \\(\\frac{x}{10x} = \\frac{1}{10}\\)으로 수렴<br>샌드위치 정리에 의해 답은 \\(\\frac{1}{10}\\)"
-            },
-            {
-                step: 6,
-                difficulty: "medium",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{36x^2 + 5[x]} - 6x \\right)\\)의 값을 구하시오.<br>(단, \\([x]\\)는 \\(x\\)보다 크지 않은 최대의 정수)",
-                hint: "\\(5[x]\\)의 범위: \\(5(x-1) < 5[x] \\leq 5x\\)",
-                options: [
-                    "\\(\\frac{5}{24}\\)",
-                    "\\(\\frac{5}{12}\\)",
-                    "\\(\\frac{1}{12}\\)",
-                    "\\(\\frac{5}{6}\\)",
-                    "\\(\\frac{1}{6}\\)"
-                ],
-                answer: 1,
-                solution: "\\(5(x-1) < 5[x] \\leq 5x\\)이므로 유리화하면:<br>\\(\\frac{5x-5}{12x} < \\frac{5[x]}{\\sqrt{36x^2+5[x]}+6x} \\leq \\frac{5x}{12x}\\)<br><br>양쪽 극한 모두 \\(\\frac{5}{12}\\)로 수렴"
-            },
-            {
-                step: 7,
-                difficulty: "medium",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{49x^2 + 3[x]} - 7x \\right)\\)의 값을 구하시오.<br>(단, \\([x]\\)는 \\(x\\)보다 크지 않은 최대의 정수)",
-                hint: "\\(\\sqrt{49x^2} = 7x\\), 유리화 후 분모는 \\(14x\\)에 수렴",
-                options: [
-                    "\\(\\frac{3}{28}\\)",
-                    "\\(\\frac{3}{14}\\)",
-                    "\\(\\frac{1}{14}\\)",
-                    "\\(\\frac{3}{7}\\)",
-                    "\\(\\frac{1}{7}\\)"
-                ],
-                answer: 1,
-                solution: "유리화: \\(\\frac{49x^2 + 3[x] - 49x^2}{\\sqrt{49x^2+3[x]} + 7x} = \\frac{3[x]}{\\sqrt{49x^2+3[x]} + 7x}\\)<br><br>\\(3(x-1) < 3[x] \\leq 3x\\)이고 분모는 \\(14x\\)에 수렴<br>샌드위치 정리: \\(\\frac{3}{14}\\)"
-            },
-            {
-                step: 8,
-                difficulty: "hard",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{x^2 + [x]^2} - \\sqrt{2}x \\right)\\)의 값을 구하시오.<br>(단, \\([x]\\)는 \\(x\\)보다 크지 않은 최대의 정수)",
-                hint: "\\([x]^2\\)의 범위: \\((x-1)^2 < [x]^2 \\leq x^2\\)",
-                options: [
-                    "\\(0\\)",
-                    "\\(-\\frac{\\sqrt{2}}{2}\\)",
-                    "\\(\\frac{\\sqrt{2}}{2}\\)",
-                    "\\(-\\frac{1}{2\\sqrt{2}}\\)",
-                    "존재하지 않음"
-                ],
-                answer: 0,
-                solution: "\\((x-1)^2 < [x]^2 \\leq x^2\\)이므로:<br>\\(x^2 + (x-1)^2 < x^2 + [x]^2 \\leq 2x^2\\)<br><br>\\(\\sqrt{2x^2 - 2x + 1} - \\sqrt{2}x\\)를 유리화하면 \\(\\frac{-2x+1}{...} \\to -\\frac{1}{\\sqrt{2}}\\)<br>\\(\\sqrt{2x^2} - \\sqrt{2}x = 0\\)<br><br>샌드위치 정리로 수렴하지 않아 보이지만, 실제로 양쪽 극한이 \\(0\\)과 \\(-\\frac{1}{\\sqrt{2}}\\) 사이에서 진동하므로 더 정밀한 분석 필요.<br>정답: \\([x] \\to x\\)로 근사하면 \\(\\sqrt{2x^2} - \\sqrt{2}x = 0\\)"
-            },
-            {
-                step: 9,
-                difficulty: "hard",
-                question: "\\(\\lim_{x \\to \\infty} x\\left( \\sqrt{1 + \\frac{[x]}{x^2}} - 1 \\right)\\)의 값을 구하시오.<br>(단, \\([x]\\)는 \\(x\\)보다 크지 않은 최대의 정수)",
-                hint: "\\(\\sqrt{1+t} - 1 \\approx \\frac{t}{2}\\) (\\(t \\to 0\\))",
-                options: [
-                    "\\(0\\)",
-                    "\\(\\frac{1}{2}\\)",
-                    "\\(1\\)",
-                    "\\(\\frac{1}{4}\\)",
-                    "존재하지 않음"
-                ],
-                answer: 1,
-                solution: "\\(t = \\frac{[x]}{x^2}\\)로 놓으면, \\(x \\to \\infty\\)일 때 \\(t \\to 0\\)<br><br>\\(x(\\sqrt{1+t} - 1) = \\frac{x \\cdot t}{\\sqrt{1+t} + 1} = \\frac{x \\cdot \\frac{[x]}{x^2}}{\\sqrt{1+t} + 1}\\)<br><br>\\(= \\frac{[x]/x}{\\sqrt{1+t} + 1} \\to \\frac{1}{2}\\)<br>(\\([x]/x \\to 1\\), \\(\\sqrt{1+t} + 1 \\to 2\\))"
-            },
-            {
-                step: 10,
-                difficulty: "hard",
-                question: "\\(\\lim_{x \\to \\infty} \\left( \\sqrt{ax^2 + [bx]} - cx \\right) = \\frac{1}{4}\\)일 때,<br>\\(a = c^2\\)이고 \\(b > 0\\)이면 \\(\\frac{b}{c}\\)의 값을 구하시오.<br>(단, \\([t]\\)는 \\(t\\)보다 크지 않은 최대의 정수)",
-                hint: "극한값이 \\(\\frac{b}{2c}\\)임을 이용",
-                options: [
-                    "\\(\\frac{1}{4}\\)",
-                    "\\(\\frac{1}{2}\\)",
-                    "\\(1\\)",
-                    "\\(2\\)",
-                    "\\(4\\)"
-                ],
-                answer: 1,
-                solution: "\\(a = c^2\\)이면 \\(\\sqrt{ax^2 + [bx]} = \\sqrt{c^2x^2 + [bx]}\\)<br><br>유리화: \\(\\frac{[bx]}{\\sqrt{c^2x^2 + [bx]} + cx} \\to \\frac{bx}{2cx} = \\frac{b}{2c}\\)<br><br>\\(\\frac{b}{2c} = \\frac{1}{4}\\)이므로 \\(\\frac{b}{c} = \\frac{1}{2}\\)"
-            }
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzB5ALdepM0Tu4II9BeHGDAdaC0qd2OXJp6Ofubwjc2FZ5f1aChz9ZCb1lBxkp12Xy2/exec';
+        let currentQuestionIndex = 0, userName = "", userAnswers = [];
+
+        const questions = [
+            { q: "$\\sqrt{25x^2 + [x]} - 5x$ 형태를 계산하려면 어떤 방법을 사용해야 하나요?", options: ["유리화", "치환", "로피탈 정리", "테일러 전개"], ans: "유리화", exp: "$\\sqrt{A} - B$ 형태는 분자, 분모에 $\\sqrt{A} + B$를 곱해 유리화합니다." },
+            { q: "유리화할 때 분자, 분모에 무엇을 곱하나요?", options: ["$\\sqrt{25x^2+[x]} + 5x$", "$\\sqrt{25x^2+[x]} - 5x$", "$25x^2 + [x]$", "$5x$"], ans: "$\\sqrt{25x^2+[x]} + 5x$", exp: "유리화 공식: $\\sqrt{A} - B$에 $\\sqrt{A} + B$를 곱합니다." },
+            { q: "유리화 후 분자 $(25x^2+[x]) - (5x)^2$를 정리하면?", options: ["$[x]$", "$25x^2$", "$[x] - 25x^2$", "$50x^2 + [x]$"], ans: "$[x]$", exp: "$(25x^2+[x]) - 25x^2 = [x]$" },
+            { q: "유리화 후 식은 $\\displaystyle\\frac{[x]}{\\sqrt{25x^2+[x]} + 5x}$입니다. $x \\to \\infty$일 때 $\\frac{[x]}{x}$의 극한은?", options: ["$1$", "$0$", "$\\infty$", "발산"], ans: "$1$", exp: "$x-1 < [x] \\le x$이므로 $\\frac{x-1}{x} < \\frac{[x]}{x} \\le 1$, 따라서 $\\frac{[x]}{x} \\to 1$" },
+            { q: "분자, 분모를 $x$로 나누면 $\\displaystyle\\frac{[x]/x}{\\sqrt{25+[x]/x^2} + 5}$가 됩니다. $x \\to \\infty$일 때 $\\frac{[x]}{x^2}$의 극한은?", options: ["$0$", "$1$", "$\\infty$", "$\\frac{1}{25}$"], ans: "$0$", exp: "$\\frac{[x]}{x^2} \\le \\frac{x}{x^2} = \\frac{1}{x} \\to 0$" },
+            { q: "$x \\to \\infty$일 때 $\\sqrt{25 + \\frac{[x]}{x^2}}$의 극한은?", options: ["$5$", "$\\sqrt{26}$", "$25$", "$0$"], ans: "$5$", exp: "$\\sqrt{25 + 0} = \\sqrt{25} = 5$" },
+            { q: "따라서 분모의 극한 $\\sqrt{25+0} + 5$는?", options: ["$10$", "$5$", "$15$", "$25$"], ans: "$10$", exp: "$5 + 5 = 10$" },
+            { q: "최종적으로 $\\displaystyle\\lim_{x \\to \\infty} \\frac{[x]/x}{\\sqrt{25+[x]/x^2} + 5} = \\frac{1}{10}$입니다. 정답은?", options: ["$\\frac{1}{10}$", "$\\frac{1}{5}$", "$0$", "$\\frac{1}{15}$"], ans: "$\\frac{1}{10}$", exp: "$\\frac{1}{5+5} = \\frac{1}{10}$" },
+            { q: "**[검증]** $\\displaystyle\\lim_{x \\to \\infty} (\\sqrt{4x^2+x} - 2x)$의 값은? (가우스 함수 없이)", options: ["$\\frac{1}{4}$", "$\\frac{1}{2}$", "$1$", "$0$"], ans: "$\\frac{1}{4}$", exp: "유리화하면 $\\frac{x}{\\sqrt{4x^2+x}+2x} = \\frac{1}{\\sqrt{4+1/x}+2} \\to \\frac{1}{4}$" },
+            { q: "**[심화]** 원래 문제의 정답은?", options: ["① $-\\frac{1}{10}$", "② $-\\frac{1}{15}$", "③ $0$", "⑤ $\\frac{1}{10}$"], ans: "⑤ $\\frac{1}{10}$", exp: "유리화 후 $\\frac{[x]}{\\sqrt{25x^2+[x]}+5x}$에서 분자, 분모를 $x$로 나누면 $\\frac{1}{10}$" }
         ];
 
-        let currentStep = 0;
-        let correctAnswers = 0;
-        let totalAttempted = 0;
-        let answered = false;
-
-        function renderQuestion() {
-            const quiz = quizData[currentStep];
-            const card = document.getElementById('quizCard');
-
-            let difficultyClass = quiz.difficulty;
-            let difficultyText = quiz.difficulty === 'easy' ? '기본' :
-                                 quiz.difficulty === 'medium' ? '중급' : '심화';
-
-            let optionsHTML = quiz.options.map((opt, idx) => `
-                <div class="option" onclick="selectOption(${idx})" id="option${idx}">
-                    <span class="option-label">${['①','②','③','④','⑤'][idx]}</span>
-                    <span class="option-text">${opt}</span>
-                </div>
-            `).join('');
-
-            card.innerHTML = `
-                <span class="step-badge">STEP ${quiz.step}</span>
-                <span class="difficulty ${difficultyClass}">${difficultyText}</span>
-
-                <div class="question">${quiz.question}</div>
-
-                <div class="hint-box">
-                    <strong>힌트:</strong> ${quiz.hint}
-                </div>
-
-                <div class="options" id="optionsContainer">
-                    ${optionsHTML}
-                </div>
-
-                <div class="solution" id="solution">
-                    <h4>풀이</h4>
-                    <div class="solution-content">${quiz.solution}</div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-primary" id="submitBtn" onclick="submitAnswer()" disabled>정답 확인</button>
-                    <button class="btn btn-secondary hidden" id="nextBtn" onclick="nextQuestion()">다음 문제</button>
-                </div>
-            `;
-
-            MathJax.typesetPromise();
-            answered = false;
-            selectedOption = -1;
-        }
-
-        let selectedOption = -1;
-
-        function selectOption(idx) {
-            if (answered) return;
-
-            document.querySelectorAll('.option').forEach((opt, i) => {
-                opt.classList.remove('selected');
-            });
-
-            document.getElementById(`option${idx}`).classList.add('selected');
-            selectedOption = idx;
-            document.getElementById('submitBtn').disabled = false;
-        }
-
-        function submitAnswer() {
-            if (selectedOption === -1 || answered) return;
-
-            answered = true;
-            totalAttempted++;
-
-            const quiz = quizData[currentStep];
-            const correctIdx = quiz.answer;
-
-            document.querySelectorAll('.option').forEach((opt, i) => {
-                opt.style.cursor = 'default';
-                if (i === correctIdx) {
-                    opt.classList.add('correct');
-                } else if (i === selectedOption && selectedOption !== correctIdx) {
-                    opt.classList.add('incorrect');
-                }
-            });
-
-            if (selectedOption === correctIdx) {
-                correctAnswers++;
-            }
-
-            document.getElementById('correctCount').textContent = correctAnswers;
-            document.getElementById('totalAttempted').textContent = totalAttempted;
-
-            document.getElementById('solution').classList.add('show');
-            document.getElementById('submitBtn').classList.add('hidden');
-            document.getElementById('nextBtn').classList.remove('hidden');
-
-            MathJax.typesetPromise();
-        }
-
-        function nextQuestion() {
-            currentStep++;
-
-            if (currentStep >= quizData.length) {
-                showResult();
-                return;
-            }
-
-            updateProgress();
-            renderQuestion();
-        }
-
-        function updateProgress() {
-            const progress = ((currentStep + 1) / quizData.length) * 100;
-            const fill = document.getElementById('progressFill');
-            fill.style.width = progress + '%';
-            fill.textContent = `${currentStep + 1} / ${quizData.length}`;
-        }
-
-        function showResult() {
-            document.getElementById('quizCard').classList.add('hidden');
-            document.getElementById('resultCard').classList.remove('hidden');
-
-            const percentage = Math.round((correctAnswers / quizData.length) * 100);
-            document.getElementById('finalScore').textContent = `${correctAnswers}/${quizData.length}`;
-
-            let message = '';
-            if (percentage >= 90) {
-                message = '훌륭합니다! 가우스 함수와 무리식 극한을 완벽히 이해하고 있습니다!';
-            } else if (percentage >= 70) {
-                message = '잘했습니다! 조금만 더 연습하면 완벽해질 거예요!';
-            } else if (percentage >= 50) {
-                message = '좋은 시도입니다! 유리화와 샌드위치 정리를 복습해보세요.';
-            } else {
-                message = '기초부터 차근차근 복습해보세요. 화이팅!';
-            }
-
-            document.getElementById('resultMessage').textContent = message;
-            document.getElementById('resultDetails').innerHTML = `
-                <p>정답률: ${percentage}%</p>
-                <p>맞은 문제: ${correctAnswers}개</p>
-                <p>틀린 문제: ${quizData.length - correctAnswers}개</p>
-            `;
-        }
-
-        function restartQuiz() {
-            currentStep = 0;
-            correctAnswers = 0;
-            totalAttempted = 0;
-
-            document.getElementById('quizCard').classList.remove('hidden');
-            document.getElementById('resultCard').classList.add('hidden');
-            document.getElementById('correctCount').textContent = '0';
-            document.getElementById('totalAttempted').textContent = '0';
-
-            updateProgress();
-            renderQuestion();
-        }
-
-        // Initialize
-        renderQuestion();
+        userAnswers = new Array(questions.length).fill(null);
+        function renderMath(element) { renderMathInElement(element || document.body, { delimiters: [{left: "$$", right: "$$", display: true}, {left: "$", right: "$", display: false}], throwOnError: false }); }
+        function showPage(id) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        function startQuiz() { userName = document.getElementById('username-input').value.trim(); if (!userName) return alert("이름을 입력해주세요!"); showPage('page-quiz'); loadQuestion(); }
+        function loadQuestion() { const q = questions[currentQuestionIndex]; document.getElementById('current-q-number').textContent = currentQuestionIndex + 1; document.getElementById('question-text').innerHTML = q.q; document.getElementById('progress-bar').style.width = `${(currentQuestionIndex / questions.length) * 100}%`; const optContainer = document.getElementById('options-container'), prevBtn = document.getElementById('prev-btn'), submitBtn = document.getElementById('submit-btn'), nextBtn = document.getElementById('next-btn'), feedbackDiv = document.getElementById('feedback'); optContainer.innerHTML = ''; const existingAnswer = userAnswers[currentQuestionIndex]; q.options.forEach(opt => { const label = document.createElement('label'); label.className = "option-label block p-4 bg-white border border-slate-200 rounded-xl shadow-sm"; const isChecked = existingAnswer && existingAnswer.selected === opt; label.innerHTML = `<div class="flex items-center"><input type="radio" name="quiz-opt" value="${opt}" class="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500 mr-3" ${isChecked ? 'checked' : ''} ${existingAnswer ? 'disabled' : ''}><span class="text-lg ${existingAnswer ? 'text-slate-600' : ''}">${opt}</span></div>`; optContainer.appendChild(label); }); prevBtn.classList.toggle('hidden', currentQuestionIndex === 0); if (existingAnswer) { showFeedbackUI(existingAnswer.isCorrect, q.ans, q.exp); submitBtn.classList.add('hidden'); nextBtn.classList.remove('hidden'); } else { feedbackDiv.classList.add('hidden'); submitBtn.classList.remove('hidden'); nextBtn.classList.add('hidden'); } renderMath(document.getElementById('question-area')); }
+        function showFeedbackUI(isCorrect, ans, exp) { const fb = document.getElementById('feedback'); fb.classList.remove('hidden'); fb.className = `mt-6 p-5 rounded-xl text-white shadow-lg ${isCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`; fb.innerHTML = `<div class="flex items-center mb-2"><span class="text-2xl mr-2">${isCorrect ? '🎉' : '❌'}</span><span class="text-lg font-bold">${isCorrect ? "정답입니다!" : "아쉽네요."}</span></div>${!isCorrect ? `<div class="mb-2">정답: <strong>${ans}</strong></div>` : ''}<div class="text-sm font-normal opacity-90 border-t border-white/20 pt-2 mt-2 leading-relaxed">${exp}</div>`; renderMath(fb); }
+        function submitAnswer() { const selected = document.querySelector('input[name="quiz-opt"]:checked'); if (!selected) return alert("보기를 선택해주세요!"); const q = questions[currentQuestionIndex]; const clean = (s) => s.replace(/\s/g, ''); const isCorrect = clean(selected.value) === clean(q.ans); userAnswers[currentQuestionIndex] = { selected: selected.value, isCorrect: isCorrect }; showFeedbackUI(isCorrect, q.ans, q.exp); document.querySelectorAll('input[name="quiz-opt"]').forEach(r => r.disabled = true); document.getElementById('submit-btn').classList.add('hidden'); document.getElementById('next-btn').classList.remove('hidden'); }
+        function prevQuestion() { if (currentQuestionIndex > 0) { currentQuestionIndex--; loadQuestion(); } }
+        function nextQuestion() { currentQuestionIndex++; if (currentQuestionIndex < questions.length) { loadQuestion(); } else { finishQuiz(); } }
+        function finishQuiz() { showPage('page-results'); const finalScore = userAnswers.filter(a => a && a.isCorrect).length; const scoreDisplay = document.getElementById('final-score'); let currentDisplayScore = 0; const interval = setInterval(() => { if (currentDisplayScore >= finalScore) { clearInterval(interval); scoreDisplay.textContent = finalScore; } else { currentDisplayScore++; scoreDisplay.textContent = currentDisplayScore; } }, 100); if(finalScore === 0) scoreDisplay.textContent = 0; sendResult(finalScore); }
+        function sendResult(finalScore) { const status = document.getElementById('upload-status'); const data = { name: userName, score: finalScore, quizTitle: "2512-무리함수극한-가우스", date: new Date().toLocaleString() }; fetch(GOOGLE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) }).then(() => { status.textContent = "결과가 안전하게 저장되었습니다."; status.classList.replace('text-slate-500', 'text-emerald-600'); }).catch(() => { status.textContent = "결과 저장에 실패했습니다."; status.classList.replace('text-slate-500', 'text-rose-600'); }); }
+        window.onload = () => renderMath();
     </script>
 </body>
 </html>
